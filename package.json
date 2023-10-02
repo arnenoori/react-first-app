@@ -11,5 +11,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "create-react-app": "^5.0.1"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
