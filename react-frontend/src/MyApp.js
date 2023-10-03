@@ -41,6 +41,25 @@ function MyApp() {
             });
     }
 
+    function deleteUser(id) {
+      const promise = fetch(`http://localhost:8000/users/${id}`, {
+          method: "DELETE",
+      });
+  
+      return promise;
+  }
+  
+  function removeCharacterById(id) {
+    deleteUser(id)
+        .then(() => {
+            const updated = characters.filter((character) => character.id !== id);
+            setCharacters(updated);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
     return (
         <div className="container">
             <Table characterData={characters} removeCharacter={removeOneCharacter} />

@@ -23,6 +23,9 @@ import React from "react";
                     <button onClick={() => props.removeCharacter(index)}>
                         Delete
                     </button>
+                    <button onClick={() => props.removeCharacterById(row.id)}>
+                        Delete by ID
+                    </button>
                 </td>
             </tr>
         );
@@ -31,13 +34,14 @@ import React from "react";
 }
 
   
-  function Table (props) {
-    return (
+function Table (props) {
+  return (
       <table>
-        <TableHeader />
-        <TableBody characterData={props.characterData} 
-          removeCharacter={props.removeCharacter} />
+          <TableHeader />
+          <TableBody characterData={props.characterData} 
+              removeCharacter={props.removeCharacter}
+              removeCharacterById={props.removeCharacterById} />
       </table>
-    );
-  }
+  );
+}
   export default Table;

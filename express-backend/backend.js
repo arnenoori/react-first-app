@@ -35,15 +35,16 @@ const users = {
    ]
 }
 
-const findUserByName = (name) => { 
+const findUserByNameAndJob = (name, job) => { 
     return users['users_list']
-        .filter( (user) => user['name'] === name); 
+        .filter( (user) => user['name'] === name && user['job'] === job); 
 }
 
 app.get('/users', (req, res) => {
     const name = req.query.name;
-    if (name != undefined){
-        let result = findUserByName(name);
+    const job = req.query.job;
+    if (name && job){
+        let result = findUserByNameAndJob(name, job);
         result = {users_list: result};
         res.send(result);
     }
@@ -64,6 +65,30 @@ app.get('/users/:id', (req, res) => {
     } else {
         res.send(result);
     }
+});
+
+const addUser = (user) => {
+    users['users_list'].push(user);
+    return user;
+}
+
+app.post('/users', (req, res) => {
+    const userToAdd = req.body;
+    addUser(userToAdd);
+    res.send();
+});
+
+const deleteUserById = (id) => {
+    const index = users['users_list'].findIndex((user) => user['id'] === id);
+    if (index !== -1) {
+        users['users_list'].splice(index, 1);
+    }
+}
+
+app.delete('/users/:id', (req, res) => {
+    const id = req.params['id'];
+    deleteUserById(id);
+    res.send();
 });
 
 // Define your routes
