@@ -13,33 +13,45 @@ function MyApp() {
     }, []);
 
     function removeOneCharacter(index) {
-        const updated = characters.filter((character, i) => {
-            return i !== index;
-        });
-        setCharacters(updated);
-    }
+      const character = characters[index];
+      fetch(`http://localhost:8000/users/${character.id}`, { method: 'DELETE' })
+          .then(response => {
+              if (response.status === 204) {
+                  const updated = characters.filter((character, i) => i !== index);
+                  setCharacters(updated);
+              } else if (response.status === 404) {
+                  console.log('User not found');
+              }
+          })
+          .catch((error) => {
+              console.log(error);
+          });
+  }
 
     // New function to make POST request to add new user
     function postUser(person) {
-        const promise = fetch("http://localhost:8000/users", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(person),
-        });
-
-        return promise;
+      return fetch("http://localhost:8000/users", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(person),
+      })
+      .then(response => response.json());
     }
 
     // Updated function to update the character list
     function updateList(person) {
-        postUser(person)
-            .then(() => setCharacters([...characters, person]))
-            .catch((error) => {
-                console.log(error);
-            });
-    }
+      postUser(person)
+          .then(([userWithId, response]) => {
+              if (response.status === 201) {
+                  setCharacters([...characters, userWithId])
+              }
+          })
+          .catch((error) => {
+              console.log(error);
+          });
+  }
 
     function deleteUser(id) {
       const promise = fetch(`http://localhost:8000/users/${id}`, {
@@ -49,6 +61,7 @@ function MyApp() {
       return promise;
   }
   
+  /*
   function removeCharacterById(id) {
     deleteUser(id)
         .then(() => {
@@ -58,7 +71,7 @@ function MyApp() {
         .catch((error) => {
             console.log(error);
         });
-}
+}*/
 
     return (
         <div className="container">
