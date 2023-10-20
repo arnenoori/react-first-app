@@ -12,6 +12,7 @@ function MyApp() {
             .catch((error) => { console.log(error); });
     }, []);
 
+    
     function removeOneCharacter(index) {
       const character = characters[index];
       fetch(`http://localhost:8000/users/${character.id}`, { method: 'DELETE' })
@@ -26,32 +27,33 @@ function MyApp() {
           .catch((error) => {
               console.log(error);
           });
-  }
+    }
 
     // New function to make POST request to add new user
     function postUser(person) {
-      return fetch("http://localhost:8000/users", {
+        return fetch("http://localhost:8000/users", {
           method: "POST",
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(person),
-      })
-      .then(response => response.json());
-    }
+        })
+        .then(response => Promise.all([response.json(), response]));
+      }
 
     // Updated function to update the character list
     function updateList(person) {
-      postUser(person)
+        postUser(person)
           .then(([userWithId, response]) => {
-              if (response.status === 201) {
-                  setCharacters([...characters, userWithId])
-              }
+            if (response.status === 201) {
+              setCharacters([...characters, userWithId])
+            }
           })
           .catch((error) => {
-              console.log(error);
+            console.log(error);
           });
-  }
+      }
+
 
     function deleteUser(id) {
       const promise = fetch(`http://localhost:8000/users/${id}`, {
@@ -59,27 +61,28 @@ function MyApp() {
       });
   
       return promise;
-  }
+    }
   
-  /*
-  function removeCharacterById(id) {
-    deleteUser(id)
-        .then(() => {
-            const updated = characters.filter((character) => character.id !== id);
-            setCharacters(updated);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-}*/
+
+    function removeCharacterById(id) {
+      deleteUser(id)
+          .then(() => {
+              const updated = characters.filter((character) => character.id !== id);
+              setCharacters(updated);
+          })
+          .catch((error) => {
+              console.log(error);
+          });
+    }
 
     return (
         <div className="container">
-            <Table characterData={characters} removeCharacter={removeOneCharacter} />
+            <Table characterData={characters} removeCharacter={removeOneCharacter} removeCharacterById={removeCharacterById} />
             <Form handleSubmit={updateList} />
         </div>
     );
 }
+
 
 function fetchUsers() {
     return fetch("http://localhost:8000/users")
@@ -89,7 +92,7 @@ function fetchUsers() {
             }
             return response.json();
         })
-        .then(data => data)
+        .then(data => data.users_list) // Extract the users_list from the response data
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
         });
